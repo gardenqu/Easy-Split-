@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Flask instance folder
+instance/
+
+# SQLite database files
+*.db
+*.sqlite3
+
+# Environment variables / config secrets
+.env
+.env.*
+
+# Pytest cache
+.pytest_cache/
+
+# IDE / editor configs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Logs
+*.log
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Migrations (optional, if using Alembic or Flask-Migrate)
+migrations/
