@@ -4,9 +4,21 @@ from models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from config import Config
 from authlib.integrations.flask_client import OAuth
+import os
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+import parse_model 
+
+
+
 
 app = Flask(__name__)
-app.config.from_object(Config)
+UPLOAD_FOLDER = 'uploads' 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
 
 # Initialize extensions
 db.init_app(app)
@@ -33,6 +45,44 @@ google = oauth.register(
 
 
 # --------- Routes ---------
+
+@app.route('/')
+def index():
+    return f"LayoutLMv3 Receipt Parser API is running. Model on {parse_model.DEVICE}."
+
+@app.route('/predict', methods=['POST'])
+def predict_api():
+    """API endpoint for receipt image processing."""
+    
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+    
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    
+    if file.filename == '' or not allowed_file(filename):
+        return jsonify({"error": "No selected file or file type not allowed"}), 400
+    
+    # Use a secure and temporary file path
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    try:
+        file.save(filepath)
+        
+        # CALL THE MODEL LOGIC FROM THE SEPARATE FILE
+        structured_output = parse_model.predict_receipt_from_image_structured(filepath)
+        
+        # Clean up the temporary file
+        os.remove(filepath)
+        
+        return jsonify({"status": "success", "data": structured_output}), 200
+
+    except Exception as e:
+        print(f"Prediction Error: {e}")
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            
+        return jsonify({"error": f"Internal server error during processing: {e}"}), 500
 
 # --- Google OAuth Endpoints ---
 
@@ -112,7 +162,7 @@ def register():
         username=data["username"],
         email=data["email"],
         phone_number=data.get("phone_number"),
-        # ✨ NEW: Add name and birthdate fields
+    
         name=data.get("name"),
         birthdate=birthdate_obj
     )
@@ -168,4 +218,4 @@ def me():
 
 # Run the app
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
