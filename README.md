@@ -49,11 +49,46 @@ ake a picture of the receipt and have the app tell you how much each person owes
   - `id`  
   - `username`  
   - `email`  
-  - `phone_number`  
+  - `phone_number` 
+
+## Receipt Processing API Routes
+
+### 5. Process Receipt Image
+
+- **POST `/api/process-receipt`**  
+  Uploads a receipt image, validates the file type, processes it, and returns structured receipt data.
+
+**Accepted File Types:**  
+- `image/jpeg`  
+- `image/png`  
+- `image/webp`
+
+**Responses:**  
+- `200 OK` – Receipt processed successfully  
+  - Returns:  
+    - `success` (boolean)  
+    - `data` (parsed receipt information)  
+    - `receipt_id` (database ID)
+
+- `400 Bad Request` – Missing image or empty filename  
+  - `{ "error": "No image file provided" }`  
+  - `{ "error": "No file selected" }`
+
+- `415 Unsupported Media Type` – File is not an allowed image type  
+  - `{ "error": "Unsupported file type: text/plain. Must be an image." }`
+
+- `500 Internal Server Error` – Failure during image processing  
+  - `{ "success": false, "error": "Internal Server Error during image processing." }`
+
+---
+### 6. Get All User Receipts
+
+**GET `/api/user/receipts`** *(JWT required)*  
+  Returns all receipts for the authenticated user. 
 
 ---
 
 **Notes:**  
 - All JWTs use `user.id` as the identity (string).  
 - OAuth users cannot login with a password.  
-- Registration handles birthdate conversion and optional fields.  
+- Registration handles birthdate conversion.  
