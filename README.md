@@ -19,8 +19,8 @@
 </div>
 
 ---
-## Demo Video
-https://github.com/gardenqu/Easy-Split-Gdi-Hackathon-2025/blob/main/static/img/app.mp4 
+## App Demo
+![Demo](./static/img/app.gif)
 ---
 
 # **Project Overview**
