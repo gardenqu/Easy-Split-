@@ -41,7 +41,7 @@ Designed mobile-first with soft animations, modern UI, and intuitive flows.
 
 ---
 
-## ** Mobile UI**
+## **Mobile UI**
 - Minimal, clean, modern design  
 - Light + Dark themes  
 - Custom tab navigation  
